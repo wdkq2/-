@@ -620,7 +620,7 @@ const Home: React.FC<HomeProps> = ({
 
   useEffect(() => {
     if (currentMessage) {
-      handleSend(currentMessage);
+      handleSend(currentMessage, handleSend);
       setCurrentMessage(undefined);
     }
   }, [currentMessage]);
