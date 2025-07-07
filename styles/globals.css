@@ -41,3 +41,18 @@ html {
 pre:has(div.codeblock) {
   padding: 0;
 }
+
+/* === Custom background === */
+body {
+  background: url('/background') no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* 글자 가독성을 위해 살짝 어둡게 덮기 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);  /* 투명도 조절 가능 */
+  z-index: -1;
+}
