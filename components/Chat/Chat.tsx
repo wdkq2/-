@@ -5,7 +5,7 @@ import { OpenAIModel, OpenAIModelID } from '@/types/openai';
 import { Plugin } from '@/types/plugin';
 import { Prompt } from '@/types/prompt';
 import { throttle } from '@/utils';
-import { IconArrowDown, IconClearAll, IconSettings } from '@tabler/icons-react';
+import { IconArrowDown} from '@tabler/icons-react';
 import { useTranslation } from 'next-i18next';
 import {
   FC,
@@ -21,8 +21,6 @@ import { ChatInput } from './ChatInput';
 import { ChatLoader } from './ChatLoader';
 import { ChatMessage } from './ChatMessage';
 import { ErrorMessageDiv } from './ErrorMessageDiv';
-import { ModelSelect } from './ModelSelect';
-import { SystemPrompt } from './SystemPrompt';
 
 interface Props {
   conversation: Conversation;
@@ -66,7 +64,6 @@ export const Chat: FC<Props> = memo(
     const { t } = useTranslation('chat');
     const [currentMessage, setCurrentMessage] = useState<Message>();
     const [autoScrollEnabled, setAutoScrollEnabled] = useState<boolean>(true);
-    const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showScrollDownButton, setShowScrollDownButton] =
       useState<boolean>(false);
 
@@ -102,16 +99,6 @@ export const Chat: FC<Props> = memo(
         top: chatContainerRef.current.scrollHeight,
         behavior: 'smooth',
       });
-    };
-
-    const handleSettings = () => {
-      setShowSettings(!showSettings);
-    };
-
-    const onClearAll = () => {
-      if (confirm(t<string>('Are you sure you want to clear all messages?'))) {
-        onUpdateConversation(conversation, { key: 'messages', value: [] });
-      }
     };
 
     const scrollDown = () => {
@@ -203,48 +190,7 @@ export const Chat: FC<Props> = memo(
               ref={chatContainerRef}
               onScroll={handleScroll}
             >
-              {conversation.messages.length === 0 ? (
-                <>
-                  <div className="mx-auto flex w-[350px] flex-col space-y-10 pt-12 sm:w-[600px]">
-                    <div className="text-center text-3xl font-semibold text-gray-800 dark:text-gray-100">
-                      {models.length === 0 ? (
-                        <div>
-                          <Spinner size="16px" className="mx-auto" />
-                        </div>
-                      ) : (
-                        'Chatbot UI'
-                      )}
-                    </div>
-
-                    {models.length > 0 && (
-                      <div className="flex h-full flex-col space-y-4 rounded-lg border border-neutral-200 p-4 dark:border-neutral-600">
-                        <ModelSelect
-                          model={conversation.model}
-                          models={models}
-                          defaultModelId={defaultModelId}
-                          onModelChange={(model) =>
-                            onUpdateConversation(conversation, {
-                              key: 'model',
-                              value: model,
-                            })
-                          }
-                        />
-
-                        <SystemPrompt
-                          conversation={conversation}
-                          prompts={prompts}
-                          onChangePrompt={(prompt) =>
-                            onUpdateConversation(conversation, {
-                              key: 'prompt',
-                              value: prompt,
-                            })
-                          }
-                        />
-                      </div>
-                    )}
-                  </div>
-                </>
-              ) : (
+              + {conversation.messages.length === 0 ? null : (
                 <>
                   <div className="flex justify-center border border-b-neutral-300 bg-neutral-100 py-2 text-sm text-neutral-500 dark:border-none dark:bg-[#444654] dark:text-neutral-200">
                     {t('Model')}: {conversation.model.name}
