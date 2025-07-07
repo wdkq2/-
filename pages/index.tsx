@@ -626,12 +626,6 @@ const Home: React.FC<HomeProps> = ({
   }, [currentMessage]);
 
   useEffect(() => {
-    if (window.innerWidth < 640) {
-      setShowSidebar(false);
-    }
-  }, [selectedConversation]);
-
-  useEffect(() => {
     if (apiKey) {
       fetchModels(apiKey);
     }
