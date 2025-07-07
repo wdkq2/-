@@ -1,7 +1,4 @@
 import { Chat } from '@/components/Chat/Chat';
-import { Chatbar } from '@/components/Chatbar/Chatbar';
-import { Navbar } from '@/components/Mobile/Navbar';
-import { Promptbar } from '@/components/Promptbar/Promptbar';
 import { ChatBody, Conversation, Message } from '@/types/chat';
 import { KeyValuePair } from '@/types/data';
 import { ErrorMessage } from '@/types/error';
@@ -29,7 +26,6 @@ import {
 import { saveFolders } from '@/utils/app/folders';
 import { exportData, importData } from '@/utils/app/importExport';
 import { savePrompts } from '@/utils/app/prompts';
-import { IconArrowBarLeft, IconArrowBarRight } from '@tabler/icons-react';
 import { GetServerSideProps } from 'next';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -70,10 +66,7 @@ const Home: React.FC<HomeProps> = ({
     useState<Conversation>();
   const [currentMessage, setCurrentMessage] = useState<Message>();
 
-  const [showSidebar, setShowSidebar] = useState<boolean>(true);
-
   const [prompts, setPrompts] = useState<Prompt[]>([]);
-  const [showPromptbar, setShowPromptbar] = useState<boolean>(true);
 
   // REFS ----------------------------------------------
 
@@ -384,15 +377,7 @@ const Home: React.FC<HomeProps> = ({
     localStorage.setItem('pluginKeys', JSON.stringify(updatedPluginKeys));
   };
 
-  const handleToggleChatbar = () => {
-    setShowSidebar(!showSidebar);
-    localStorage.setItem('showChatbar', JSON.stringify(!showSidebar));
-  };
 
-  const handleTogglePromptbar = () => {
-    setShowPromptbar(!showPromptbar);
-    localStorage.setItem('showPromptbar', JSON.stringify(!showPromptbar));
-  };
 
   const handleExportData = () => {
     exportData();
@@ -678,19 +663,6 @@ const Home: React.FC<HomeProps> = ({
       setPluginKeys(JSON.parse(pluginKeys));
     }
 
-    if (window.innerWidth < 640) {
-      setShowSidebar(false);
-    }
-
-    const showChatbar = localStorage.getItem('showChatbar');
-    if (showChatbar) {
-      setShowSidebar(showChatbar === 'true');
-    }
-
-    const showPromptbar = localStorage.getItem('showPromptbar');
-    if (showPromptbar) {
-      setShowPromptbar(showPromptbar === 'true');
-    }
 
     const folders = localStorage.getItem('folders');
     if (folders) {
@@ -744,115 +716,27 @@ const Home: React.FC<HomeProps> = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {selectedConversation && (
-        <main
-          className={`flex h-screen w-screen flex-col text-sm text-white dark:text-white ${lightMode}`}
-        >
-          <div className="fixed top-0 w-full sm:hidden">
-            <Navbar
-              selectedConversation={selectedConversation}
-              onNewConversation={handleNewConversation}
-            />
-          </div>
+  <main
+    className={`flex flex-col h-screen w-screen text-sm text-white dark:text-white ${lightMode}`}
+  >
+    <Chat
+      conversation={selectedConversation}
+      messageIsStreaming={messageIsStreaming}
+      apiKey={apiKey}
+      serverSideApiKeyIsSet={serverSideApiKeyIsSet}
+      defaultModelId={defaultModelId}
+      modelError={modelError}
+      models={models}
+      loading={loading}
+      prompts={prompts}
+      onSend={handleSend}
+      onUpdateConversation={handleUpdateConversation}
+      onEditMessage={handleEditMessage}
+      stopConversationRef={stopConversationRef}
+    />
+  </main>
+)}
 
-          <div className="flex h-full w-full pt-[48px] sm:pt-0">
-            {showSidebar ? (
-              <div>
-                <Chatbar
-                  loading={messageIsStreaming}
-                  conversations={conversations}
-                  lightMode={lightMode}
-                  selectedConversation={selectedConversation}
-                  apiKey={apiKey}
-                  pluginKeys={pluginKeys}
-                  folders={folders.filter((folder) => folder.type === 'chat')}
-                  onToggleLightMode={handleLightMode}
-                  onCreateFolder={(name) => handleCreateFolder(name, 'chat')}
-                  onDeleteFolder={handleDeleteFolder}
-                  onUpdateFolder={handleUpdateFolder}
-                  onNewConversation={handleNewConversation}
-                  onSelectConversation={handleSelectConversation}
-                  onDeleteConversation={handleDeleteConversation}
-                  onUpdateConversation={handleUpdateConversation}
-                  onApiKeyChange={handleApiKeyChange}
-                  onClearConversations={handleClearConversations}
-                  onExportConversations={handleExportData}
-                  onImportConversations={handleImportConversations}
-                  onPluginKeyChange={handlePluginKeyChange}
-                  onClearPluginKey={handleClearPluginKey}
-                />
-
-                <button
-                  className="fixed top-5 left-[270px] z-50 h-7 w-7 hover:text-gray-400 dark:text-white dark:hover:text-gray-300 sm:top-0.5 sm:left-[270px] sm:h-8 sm:w-8 sm:text-neutral-700"
-                  onClick={handleToggleChatbar}
-                >
-                  <IconArrowBarLeft />
-                </button>
-                <div
-                  onClick={handleToggleChatbar}
-                  className="absolute top-0 left-0 z-10 h-full w-full bg-black opacity-70 sm:hidden"
-                ></div>
-              </div>
-            ) : (
-              <button
-                className="fixed top-2.5 left-4 z-50 h-7 w-7 text-white hover:text-gray-400 dark:text-white dark:hover:text-gray-300 sm:top-0.5 sm:left-4 sm:h-8 sm:w-8 sm:text-neutral-700"
-                onClick={handleToggleChatbar}
-              >
-                <IconArrowBarRight />
-              </button>
-            )}
-
-            <div className="flex flex-1">
-              <Chat
-                conversation={selectedConversation}
-                messageIsStreaming={messageIsStreaming}
-                apiKey={apiKey}
-                serverSideApiKeyIsSet={serverSideApiKeyIsSet}
-                defaultModelId={defaultModelId}
-                modelError={modelError}
-                models={models}
-                loading={loading}
-                prompts={prompts}
-                onSend={handleSend}
-                onUpdateConversation={handleUpdateConversation}
-                onEditMessage={handleEditMessage}
-                stopConversationRef={stopConversationRef}
-              />
-            </div>
-
-            {showPromptbar ? (
-              <div>
-                <Promptbar
-                  prompts={prompts}
-                  folders={folders.filter((folder) => folder.type === 'prompt')}
-                  onCreatePrompt={handleCreatePrompt}
-                  onUpdatePrompt={handleUpdatePrompt}
-                  onDeletePrompt={handleDeletePrompt}
-                  onCreateFolder={(name) => handleCreateFolder(name, 'prompt')}
-                  onDeleteFolder={handleDeleteFolder}
-                  onUpdateFolder={handleUpdateFolder}
-                />
-                <button
-                  className="fixed top-5 right-[270px] z-50 h-7 w-7 hover:text-gray-400 dark:text-white dark:hover:text-gray-300 sm:top-0.5 sm:right-[270px] sm:h-8 sm:w-8 sm:text-neutral-700"
-                  onClick={handleTogglePromptbar}
-                >
-                  <IconArrowBarRight />
-                </button>
-                <div
-                  onClick={handleTogglePromptbar}
-                  className="absolute top-0 left-0 z-10 h-full w-full bg-black opacity-70 sm:hidden"
-                ></div>
-              </div>
-            ) : (
-              <button
-                className="fixed top-2.5 right-4 z-50 h-7 w-7 text-white hover:text-gray-400 dark:text-white dark:hover:text-gray-300 sm:top-0.5 sm:right-4 sm:h-8 sm:w-8 sm:text-neutral-700"
-                onClick={handleTogglePromptbar}
-              >
-                <IconArrowBarLeft />
-              </button>
-            )}
-          </div>
-        </main>
-      )}
     </>
   );
 };
