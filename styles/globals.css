@@ -44,7 +44,7 @@ pre:has(div.codeblock) {
 
 /* === Custom background === */
 body {
-  background: url('/background') no-repeat center center fixed;
+  background: url('/내일의커피.png') no-repeat center center fixed;
   background-size: cover;
 }
 
